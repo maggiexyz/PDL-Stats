@@ -280,11 +280,59 @@ sub t_anova {
   $d = lvalue_assign_detour( $d, 20, 10 );
   my %m = $d->anova(\@a, $b, $c, {IVNM=>[qw(A B C)], plot=>0});
 # print "$_\t$m{$_}\n" for (sort keys %m);
+diag "$_\t$m{$_}\n" for (sort keys %m);
   my $ans_F = pdl(165.252100840336, 0.0756302521008415);
   my $ans_m = pdl([qw(8 18 38 53)], [qw(8 23 38 53)]);
   return  sum( pdl( @m{'| A | F', '| A ~ B ~ C | F'} ) - $ans_F )
         + sum( $m{'# A ~ B ~ C # m'}->(,2,)->squeeze - $ans_m )
   ;
+}
+
+{
+# in Octave:
+# y = [1 1 1 1 2 2 2 3 3 4 4 4 5 5 5 5 5 5]
+# g1 = mod(0:17, 3)+1
+# g2 = (1:18) > 6
+# g3 = mod((1:18), 2)
+# anovan( y, [g1',g2',g3'])
+#Source of Variation        Sum Sqr   df      MeanSS    Fval   p-value
+#*********************************************************************
+#Error                       12.33     0        Inf
+#Factor               A       0.22     1       0.22    0.000      NaN
+#Factor               B      32.11     1      32.11    0.000      NaN
+#Factor               C       0.44     2       0.22    0.000      NaN
+# in MATLAB
+#Source   Sum Sqr   df     MeanSS   Fval     p-value
+#********************************************************
+#X1        0.4444   2       0.2222  0.23     0.7944
+#X2       32.1111   1      32.1111  33.85    0.0001
+#X3        0.2222   1       0.2222  0.23     0.6365
+#Error    12.3333   13      0.9487
+#Total    45.1111   17
+  my $y = pdl '[1 1 1 1 2 2 2 3 3 4 4 4 5 5 5 5 5 5]'; # ratings for 24 apples
+  my $a = sequence(18) % 3 + 1; # IV for types of apple
+  my @b = qw( y y y y y y n n n n n n n n n n n n ); # IV for whether we baked the apple
+  my @c = qw( r g r g r g r g r g r g r g r g r g ); # IV for apple colour (red/green)
+  my %m = $y->anova( $a, \@b, \@c, { IVNM=>[qw(apple bake colour)] } );
+diag "$_\t$m{$_}\n" for (sort keys %m);
+  my %cmp = (
+    '| apple | F' => 0.23,
+    '| apple | F_p' => 0.7944,
+    '| apple | ms' => 0.2222,
+    '| apple | ss' => 0.4444,
+    '| bake | F' => 33.85,
+    '| bake | F_p' => 0.0001,
+    '| bake | ms' => 32.1111,
+    '| bake | ss' => 32.1111,
+    '| colour | F' => 0.23,
+    '| colour | F_p' => 0.6365,
+    '| colour | ms' => 0.2222,
+    '| colour | ss' => 0.2222,
+    ss_total => 45.1111,
+  );
+  ok tapprox( $m{$_}, $cmp{$_}, 1e-4 ), "anova apples '$_'" or diag "got: $m{$_}\nexpected:$cmp{$_}"
+    for sort keys %cmp;
+die;
 }
 
 is( tapprox( t_anova_1way(), 0 ), 1, 'anova_1w' );

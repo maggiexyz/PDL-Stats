@@ -1394,9 +1394,12 @@ sub PDL::anova_rptd {
     }
   } else {
     $ret{ss_model} = $ret{ss_total} - $ret{ss_residual};
-    $ret{F_df} = pdl($ivs->dim(1) - 1, $y->nelem - ($ivs->dim(1) - 1) -1);
+warn "ivs=$ivs ", $ivs->info;
+warn "y=$y ", $y->info;
+    $ret{F_df} = pdl($ivs->dim(0) - 1, $y->nelem - ($ivs->dim(1) - 1) -1);
+warn "F_df=$ret{F_df}\n";
     $ret{ms_model} = $ret{ss_model} / $ret{F_df}->(0);
-    $ret{ms_residual} = $ret{ss_residual} / $ret{F_df}->(1);
+    $ret{ms_residual} = $ret{ss_residual} / $ret{F_df}->(0);
     $ret{F} = $ret{ms_model} / $ret{ms_residual};
     $ret{F_p} = 1 - $ret{F}->gsl_cdf_fdist_P( $ret{F_df}->dog )
       if $CDF and $ret{F_df}->(1) > 0;

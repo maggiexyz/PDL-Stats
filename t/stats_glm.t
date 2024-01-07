@@ -470,9 +470,9 @@ sub t_anova_rptd_mixed {
 # Tests for mixed anova thanks to Erich Greene
 
 ok tapprox( t_anova_rptd_mixed_l2ord2(), 0,      ), 'anova_rptd mixed with 2 btwn-subj var levels, data grouped by subject';
+ok tapprox( t_anova_rptd_mixed_l2ord1(), 0,      ), 'anova_rptd mixed with 2 btwn-subj var levels, data grouped by within var';
 SKIP: {
-    skip "yet to be fixed", 3;
-    ok tapprox( t_anova_rptd_mixed_l2ord1(), 0,      ), 'anova_rptd mixed with 2 btwn-subj var levels, data grouped by within var';
+    skip "yet to be fixed", 2;
     ok tapprox( t_anova_rptd_mixed_l3ord1(), 0, .001 ), 'anova_rptd mixed with 3 btwn-subj var levels, data grouped by within var';
     ok tapprox( t_anova_rptd_mixed_l3ord2(), 0, .001 ), 'anova_rptd mixed with 3 btwn-subj var levels, data grouped by subject';
 }

@@ -1472,9 +1472,10 @@ sub _add_errors {
   my $spdl = zeroes $subj->dim(0), keys(%grp_s) - $grp->dim(1);
   my ($d0, $d1) = (0, 0);
   for my $g (0 .. $grp->dim(1)-1) {
-    my $gsub = $subj( which $grp( ,$g) )->effect_code;
+    my $col_inds = which $grp( ,$g);
+    my $gsub = $subj( $col_inds )->effect_code;
     my ($nobs, $nsub) = $gsub->dims;
-    ($_tmp = $spdl($d0:$d0+$nobs-1, $d1:$d1+$nsub-1)) .= $gsub;
+    ($_tmp = $spdl($col_inds, $d1:$d1+$nsub-1)) .= $gsub;
     $d0 += $nobs;
     $d1 += $nsub;
   }

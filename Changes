@@ -1,3 +1,5 @@
+- fix anova_rptd problem depending on grouping of IVs (part of RT#97925)
+
 0.84 2024-05-27
 - effect_code exception if only one unique value
 - fix for Distr so M_PI found - thanks @shawnlaffan

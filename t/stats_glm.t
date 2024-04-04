@@ -593,6 +593,18 @@ sub t_anova_rptd_mixed_l3ord2 {
 
 ok tapprox( t_anova_rptd_mixed_bad(), 0 ), 'anova_rptd mixed bad';
 sub t_anova_rptd_mixed_bad {
+  # with the "bad" ie removed subject and data removed, in Octave:
+  # d = [3 2 1 5 2 1 5 3 1 4 1 2 3 5 5 3 4 2 1 5 4 3 2 2]
+  # s = mod((0:23), 4)
+  # a = floor((0:23) / 8)
+  # b = repmat((0:7) > 3, 1, 3)
+  # anovan(d', [s',a',b'])
+  # Source of Variation        Sum Sqr  df      MeanSS    Fval   p-value
+  # ********************************************************************
+  # Error                       44.21   0#ML:17 Inf#ML:2.6
+  # Factor               A       2.04   1       2.04    0#ML:0.7851 NaN#ML:0.39
+  # Factor               B       0.25   2       0.12    0#ML:0.0481 NaN#ML:0.95
+  # Factor               C       2.12   3       0.71    0#ML:0.2724 NaN#ML:0.84
   my $d = pdl qw( 3 2 1 5 2 1 5 3 1 4 1 2 3 5 5 3 4 2 1 5 4 3 2 2 1 1 1 1 );
   my $s = sequence(4)->dummy(1,6)->flat;
 # [0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3 0 1 2 3]
@@ -607,7 +619,9 @@ sub t_anova_rptd_mixed_bad {
   # any missing value causes all data from the subject (4) to be dropped
   $b->setbadat(-1);
   my %m = $d->anova_rptd($s, $a, $b, {ivnm=>['a','b'],btwn=>[1],plot=>0, v=>0});
+diag "$_\t$m{$_}" for sort keys %m;
   test_stats_cmp(\%m, {
+    '| a | df' => 2,
     '| a | F' => 0.0775862068965517,
     '| a | ms' => 0.125,
     '| a ~ b | F' => 1.88793103448276,
